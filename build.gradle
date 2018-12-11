@@ -1,0 +1,54 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+apply plugin: 'java'
+
+group = 'com.nisum'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile group: 'org.projectlombok', name: 'lombok-maven', version: '1.16.8.0', ext: 'pom'
+	compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.14.0'
+
+	compile "info.cukes:cucumber-java:1.2.4"
+	compile "info.cukes:cucumber-junit:1.2.4"
+	compile 'info.cukes:cucumber-spring:1.1.2'
+
+	testCompile 'io.rest-assured:rest-assured:3.2.0'
+	compile 'io.rest-assured:json-path:3.2.0'
+	compile 'io.rest-assured:xml-path:3.2.0'
+	testCompile 'io.rest-assured:json-schema-validator:3.2.0'
+	testCompile 'com.jayway.restassured:rest-assured:2.4.1'
+}
+
+configurations {
+	cucumberRuntime {
+		extendsFrom testRuntime
+	}
+}
+
+// setup the cucumber task
+task cucumber() {
+	dependsOn compileTestJava
+	doLast {
+		javaexec {
+			main = "cucumber.api.cli.Main"
+			classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+			args = ['--plugin', 'pretty', '--glue', 'com.nisum.cucumberDemo', 'src/test/resources']
+		}
+	}
+}
+
+test {
+	systemProperties = System.properties
+	testLogging.showStandardStreams = true
+}
+
