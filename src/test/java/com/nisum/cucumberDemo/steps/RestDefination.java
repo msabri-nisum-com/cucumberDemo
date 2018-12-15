@@ -32,6 +32,7 @@ public class RestDefination {
                         get("/products/").
                         then().
                         body(containsString("Pants")).
+                        body(containsString("T-shirt")).
                         extract().response();
     }
 }
